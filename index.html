@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <style>
+        body {
+        font-family: 'Source Sans Pro', sans-serif;
+        display: flex;
+        height: 100;
+        overflow: hidden;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        }
+    </style>
+    </head>
+        <body onload="getLocation()">
+        <p id="status"></p>
+        <br>
+        <svg xmlns="http://www.w3.org/2000/svg" width="400px" height="400px">
+            <rect width="400px" height="400px" fill="#000" id="canvas"/>
+        </svg>
+        <br>
+        <br>
+        <button onclick="getLocation()">Refresh</button>
+
+    <p id="converted"></p>
+  </body>
+  </html>
+<script>
+    //Sets convertCoord to HTML element to display converted GPS coordinates
+    let convertedCoord = document.getElementById("converted");
+    //Sets locationStatus to HTML element to display users location query status
+    let locationStatus = document.getElementById("status");
+
+    let id;
+    //Gets user's location
+    function getLocation()
+    {
+        if (navigator.geolocation) 
+        {
+            //Informs the user that location data is being gathered
+            locationStatus.innerHTML = "Getting Location";
+
+            //Uses naviagtor to obtain and update geolocation
+            id = navigator.geolocation.watchPosition(showPosition, error);
+        } 
+    }
+
+    function error(err) 
+    {
+        console.error(`ERROR(${err.code}): ${err.message}`);
+    }
+
+    //Shows position
+    function showPosition(position) 
+    {
+        console.log(position);
+        //Informs user that their location is updating
+        locationStatus.innerHTML = "Updating Location";
+        //Uses graphics to draw the current position on the screen for the user
+        draw(position.coords.latitude, position.coords.longitude);
+    }
+
+    //Targeting the svg itself
+    const svg = document.querySelector("svg");
+
+    //Variable for the namespace 
+    const svgns = "http://www.w3.org/2000/svg";
+
+    //Draws Circles to display
+    let posCir = document.createElementNS(svgns, "circle");
+    let innerCir = document.createElementNS(svgns, "circle");
+    let outerCir = document.createElementNS(svgns, "circle");
+
+    function draw(x,y)
+    {
+    
+    let currentX = ConvertCoordinate(x);
+    let currentY = ConvertCoordinate(y);
+
+    //Sets text to converted coordinate values
+    convertedCoord.innerHTML = 
+    `<br> Lattitude: ${currentX[0]}.${currentX[1]} 
+    <br> Longitude: ${currentY[0]}.${currentY[1]}`;
+
+    outerCir = drawCircle(outerCir, currentX[1], currentY[1], 30, "#40c4ff", false);
+    posCir = drawCircle(posCir, currentX[1], currentY[1], 5, "#fff", true);
+    
+    //Appends the circles to the SVG
+    svg.appendChild(outerCir);
+    svg.appendChild(posCir);
+    
+    //Informs user location was found
+    locationStatus.innerHTML = "Location Found";
+
+    }
+
+    //Draws circle SVG objects
+    function drawCircle(circle,xPos,yPos, radius, color, fill)
+    {
+        //Sets circle attributes
+        circle.setAttribute("cx", xPos.toString());
+        circle.setAttribute("cy", yPos.toString());
+        circle.setAttribute("r", radius);
+        //Sets circle colors
+        if (fill)
+            circle.setAttribute("style", `fill: ${color};`);
+        else
+            circle.setAttribute("style", `fill: none; stroke: ${color}; stroke-width: 2px;`);
+        //Returns drawn circle
+        return circle;
+    }
+
+    function ConvertCoordinate(pos)
+    {
+        let coordMain = Math.abs(pos);
+
+        //Converts lattitude to string and removes excess values
+        coordMain = coordMain.toString();
+        coordMain = coordMain.split(".");
+        coordMain = coordMain[0];
+    
+        //Gets the 4th value from the geolocation
+        //This allows the users position to properly update
+        let coord = pos * 1000; //10000
+    
+        cordPos = Math.round(coord * 100) / 100;
+    
+        //Converts updated coordinates to string and removes excess values
+        let coordSub = cordPos.toString();
+
+        coordSub = coordSub.split(".");
+        coordSub = coordSub[1];
+        //Returns values as an array
+        return [coordMain, coordSub]
+
+    }
+
+</script>
