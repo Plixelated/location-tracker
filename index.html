@@ -14,16 +14,24 @@
     </style>
     </head>
         <body onload="getLocation()">
-        <p id="status"></p>
-        <br>
-        <svg xmlns="http://www.w3.org/2000/svg" width="400px" height="400px">
-            <rect width="400px" height="400px" fill="#000" id="canvas"/>
-        </svg>
-        <br>
-        <br>
-        <button onclick="getLocation()">Refresh</button>
+        <table style="margin-left: auto; margin-right: auto; text-align: center;">
+            <tr>
+                <td><p id="status"></p></td>
+            </tr>
+            <tr>
+                <td>
+                <svg xmlns="http://www.w3.org/2000/svg" width="400px" height="400px">
+                    <rect width="400px" height="400px" fill="#000" id="canvas"/>
+                 </svg>
+                </td>
+            </tr>
+            <tr>
+            <td> <button onclick="getLocation()">Refresh</button> </td>
+            </tr>
+        </table>
 
     <p id="converted"></p>
+
   </body>
   </html>
 <script>
